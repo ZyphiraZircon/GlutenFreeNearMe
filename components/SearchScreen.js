@@ -75,7 +75,6 @@ class SearchScreen extends React.Component {
         fontFamily: 'Roboto',
         textAlign: 'center',
         fontSize: 32,
-        // marginBottom: 100
       },
       topLogo: {
         position: 'absolute',
@@ -84,13 +83,6 @@ class SearchScreen extends React.Component {
       bottomButton: {
         position: 'absolute',
         bottom: 20
-        // shadowColor: '#000000',
-        // shadowOffset: {
-        //  height: 1,
-        //  width: 1,
-        // },
-        // shadowRadius: 5,
-        // shadowOpacity: 0.3,
       },
       bigText: {
         textAlign: 'center',
@@ -122,13 +114,13 @@ class SearchScreen extends React.Component {
             <Text style={styles.bigText}>I'm hungry for</Text>
             <Form style={{ margin: 'auto', paddingTop: 0, paddingLeft: 20, paddingRight: 20, width: '100%' }}>
               <Item
-                style={{ borderColor: 'black', borderBottomWidth: 1 }}
+                style={{ borderColor: 'black', borderBottomWidth: 1, alignItems: 'center', justifyContent: 'center' }}
                 underline
               >
                 <Input
                   onChangeText={text => this.updateValues('searchTerm', text)}
                   value={this.state.searchTerm}
-                  style={{ color: '#333333', fontFamily: 'Roboto' }}
+                  style={{ color: '#333333', fontFamily: 'Roboto', textAlign: 'center' }}
                   placeholderTextColor={'#777777'}
                   placeholder="(leave blank if you don't know)"
                   autoCapitalize={'none'}
