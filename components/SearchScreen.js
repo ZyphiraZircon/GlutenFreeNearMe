@@ -1,8 +1,11 @@
 import React from "react";
 import { StatusBar, Dimensions, View } from "react-native";
-import { Container, Button, Text, Form, Item, Input, Picker, Row, Col } from "native-base";
+import { Container, Button, Text, Form, Item, Input, Picker, Icon } from "native-base";
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as restaurantActions from '../actions/restaurantActions';
 
-export default class SearchScreen extends React.Component {
+class SearchScreen extends React.Component {
   constructor(props, context) {
     super(props, context);
 
@@ -10,11 +13,29 @@ export default class SearchScreen extends React.Component {
       useCurrentLocation: true,
       searchTerm: '',
       radius: '5',
-      customLocation: ''
+      customLocation: '',
+      latitude: '',
+      longitude: '',
+      error: ''
     };
     this.updateValues = this.updateValues.bind(this);
     this.toggleCustomLocation = this.toggleCustomLocation.bind(this);
     this.doSearch = this.doSearch.bind(this);
+    this.searchCallback = this.searchCallback.bind(this);
+  }
+
+  componentDidMount() {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        this.setState({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          error: null,
+        });
+      },
+      (error) => this.setState({ error: error.message }),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+    );
   }
 
   updateValues(name, text) {
@@ -26,8 +47,15 @@ export default class SearchScreen extends React.Component {
   }
 
   doSearch() {
-    alert(this.state.searchTerm);
-    // this.props.navigation.navigate("Results");
+    this.props.actions.restaurant.searchRestaurants(this.state, this.searchCallback);
+  }
+
+  searchCallback(bool) {
+    if (bool) {
+      this.props.navigation.navigate("Results");
+    } else {
+      alert('There was an error.');
+    }
   }
 
   render() {
@@ -39,14 +67,15 @@ export default class SearchScreen extends React.Component {
         flex: 1,
         height: (screenHeight),
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        backgroundColor: '#ecd9c6'
       },
       logoText: {
-        color: '#333333',
-        fontFamily: 'Arial',
+        color: '#004c66',
+        fontFamily: 'Roboto',
         textAlign: 'center',
-        fontSize: 28,
-        marginBottom: 100
+        fontSize: 32,
+        // marginBottom: 100
       },
       topLogo: {
         position: 'absolute',
@@ -63,16 +92,34 @@ export default class SearchScreen extends React.Component {
         // shadowRadius: 5,
         // shadowOpacity: 0.3,
       },
+      bigText: {
+        textAlign: 'center',
+        margin: 20,
+        color: '#004c66',
+        fontFamily: 'Roboto',
+        fontWeight: '600',
+        fontSize: 18
+      },
+      button: {
+        marginTop: 10,
+        backgroundColor: '#004c66',
+      },
+      buttonText: {
+        fontFamily: 'Roboto',
+        fontWeight: '600',
+        fontSize: 18
+      }
     };
 
     return (
       <Container>
         <View style={styles.container}>
           <View style={styles.topLogo}>
-            <Text style={styles.logoText}>GLUTEN-FREE NEAR ME</Text>
+            <Text style={styles.logoText}>GLUTEN-FREE</Text>
+            <Text style={styles.logoText}>NEAR ME</Text>
           </View>
           <View style={{ position: 'absolute', top: 250, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ textAlign: 'center', margin: 20 }}>I'm hungry for</Text>
+            <Text style={styles.bigText}>I'm hungry for</Text>
             <Form style={{ margin: 'auto', paddingTop: 0, paddingLeft: 20, paddingRight: 20, width: '100%' }}>
               <Item
                 style={{ borderColor: 'black', borderBottomWidth: 1 }}
@@ -81,13 +128,13 @@ export default class SearchScreen extends React.Component {
                 <Input
                   onChangeText={text => this.updateValues('searchTerm', text)}
                   value={this.state.searchTerm}
-                  style={{ color: '#333333', fontFamily: 'Arial' }}
+                  style={{ color: '#333333', fontFamily: 'Roboto' }}
                   placeholderTextColor={'#777777'}
-                  placeholder="(Leave blank if you don't know)"
+                  placeholder="(leave blank if you don't know)"
                   autoCapitalize={'none'}
                 />
               </Item>
-              <Text style={{ textAlign: 'center', margin: 20 }}>within</Text>
+              <Text style={styles.bigText}>within</Text>
               <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                 <Item picker
                   style={{ width: 100 }}
@@ -95,7 +142,7 @@ export default class SearchScreen extends React.Component {
                 >
                   <Picker
                     mode="dropdown"
-                    // iosIcon={<Icon name="ios-arrow-down-outline" />}
+                    iosIcon={<Icon name="ios-arrow-down-outline" />}
                     // style={{ lineHeight: 1 }}
                     placeholder="Radius"
                     placeholderStyle={{ }}
@@ -111,42 +158,15 @@ export default class SearchScreen extends React.Component {
                   </Picker>
                 </Item>
               </View>
-              <Text style={{ textAlign: 'center', margin: 20 }}>of</Text>
-              { this.state.useCurrentLocation ? <Button
-                  block
-                  bordered
-                  style={{ marginTop: 10 }}
-                  onPress={() => this.toggleCustomLocation(false)}>
-                  <Text>Current Location</Text>
-                </Button> : <View>
-                <Item
-                  style={{ borderColor: 'black', borderBottomWidth: 1 }}
-                  underline
-                >
-                  <Input
-                    onChangeText={text => this.updateValues('customLocation', text)}
-                    value={this.state.customLocation}
-                    style={{ color: '#333333', fontFamily: 'Arial' }}
-                    placeholderTextColor={'#777777'}
-                    placeholder="Enter a location"
-                  />
-                </Item>
-                <Button
-                  block
-                  bordered
-                  style={{ marginTop: 10 }}
-                  onPress={() => this.toggleCustomLocation(true)}>
-                  <Text>Use Current Location</Text>
-                </Button>
-              </View>}
+              <Text style={styles.bigText}>of me.</Text>
             </Form>
           </View>
           <View style={styles.bottomButton}>
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
               <Button
-                      style={{ marginTop: 10 }}
+                      style={styles.button}
                       onPress={() => this.doSearch()}>
-                <Text>Search (Test)</Text>
+                <Text style={styles.buttonText}>SEARCH</Text>
               </Button>
             </View>
           </View>
@@ -155,3 +175,19 @@ export default class SearchScreen extends React.Component {
     );
   }
 }
+
+function mapStateToProps(state, ownProps) {
+  return {
+    restaurants: state.restaurants
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: {
+      restaurant: bindActionCreators(restaurantActions, dispatch)
+    }
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SearchScreen);
