@@ -67,7 +67,7 @@ class ResultsScreen extends React.Component {
 
   callNumber() {
     const cleanedNumber = this.state.details.formatted_phone_number.replace(/\D/g,'');
-    const url = 'tel:' + '+' + cleanedNumber;
+    const url = 'tel:' + cleanedNumber;
     // alert(url);
     Linking.openURL(url);
   }
@@ -104,11 +104,10 @@ class ResultsScreen extends React.Component {
       <Container>
         <Header style={styles.header}>
           <Left>
-            <Button
-              transparent
+            <TouchableOpacity
               onPress={() => this.props.navigation.navigate("Search")}>
-              <Icon active name="md-arrow-back" style={{ color: '#004c66' }}/>
-            </Button>
+              <Text style={{ color: '#004c66' }}>Back</Text>
+            </TouchableOpacity>
           </Left>
           <Body>
             <Title style={styles.title}>Food Near Me</Title>
@@ -116,44 +115,48 @@ class ResultsScreen extends React.Component {
           <Right />
         </Header>
         <Content padder style={styles.content}>
-          { this.props.restaurants.map((place, index) => (
-            <TouchableOpacity key={index} onPress={() => this.showDetailsModal(place)}>
-              <Card>
-                <CardItem>
-                  <Left>
-                    <Thumbnail source={{uri: place.icon}} />
+          { this.props.restaurants.length ? <View>
+            { this.props.restaurants.map((place, index) => (
+              <TouchableOpacity key={index} onPress={() => this.showDetailsModal(place)}>
+                <Card>
+                  <CardItem>
+                    <Left>
+                      <Thumbnail source={{uri: place.icon}} />
+                      <Body>
+                        <Text>{place.name}</Text>
+                        <Text note>{place.formatted_address}</Text>
+                      </Body>
+                    </Left>
+                    <Right>
+                      <Text>{place.milesAway} miles away</Text>
+                    </Right>
+                  </CardItem>
+                  <CardItem style={{ backgroundColor: '#FAFAFA'}}>
+                    <Left>
+                      <Button transparent>
+                        <Text style={{ color: '#e6a800'}} >★</Text>
+                        <Text style={{ color: '#e6a800'}}>{place.rating}</Text>
+                      </Button>
+                    </Left>
                     <Body>
-                      <Text>{place.name}</Text>
-                      <Text note>{place.formatted_address}</Text>
-                    </Body>
-                  </Left>
-                  <Right>
-                    <Text>{place.milesAway} miles away</Text>
-                  </Right>
-                </CardItem>
-                <CardItem style={{ backgroundColor: '#FAFAFA'}}>
-                  <Left>
                     <Button transparent>
-                      <Icon active name="star" style={{ color: '#e6a800'}} />
-                      <Text style={{ color: '#e6a800'}}>{place.rating}</Text>
+                      { place.price_level === 0 ? <Text note>$$$$</Text> : null }
+                      { place.price_level === 1 ? <Text style={{ color: '#333333'}}>$<Text note>$$$</Text></Text> : null }
+                      { place.price_level === 2 ? <Text style={{ color: '#333333'}}>$$<Text note>$$</Text></Text> : null }
+                      { place.price_level === 3 ? <Text style={{ color: '#333333'}}>$$$<Text note>$</Text></Text> : null }
+                      { place.price_level === 4 ? <Text style={{ color: '#333333'}}>$$$$</Text> : null }
                     </Button>
-                  </Left>
-                  <Body>
-                  <Button transparent>
-                    { place.price_level === 0 ? <Text note>$$$$</Text> : null }
-                    { place.price_level === 1 ? <Text style={{ color: '#333333'}}>$<Text note>$$$</Text></Text> : null }
-                    { place.price_level === 2 ? <Text style={{ color: '#333333'}}>$$<Text note>$$</Text></Text> : null }
-                    { place.price_level === 3 ? <Text style={{ color: '#333333'}}>$$$<Text note>$</Text></Text> : null }
-                    { place.price_level === 4 ? <Text style={{ color: '#333333'}}>$$$$</Text> : null }
-                  </Button>
-                  </Body>
-                  <Right>
-                    { place.opening_hours && place.opening_hours.open_now ? <Text style={{ color: '#007700' }}>Open</Text> : <Text style={{ color: '#770000' }}>Closed</Text> }
-                  </Right>
-                </CardItem>
-              </Card>
-            </TouchableOpacity>
-          ))}
+                    </Body>
+                    <Right>
+                      { place.opening_hours && place.opening_hours.open_now ? <Text style={{ color: '#007700' }}>Open</Text> : <Text style={{ color: '#770000' }}>Closed</Text> }
+                    </Right>
+                  </CardItem>
+                </Card>
+              </TouchableOpacity>
+            ))}
+          </View> : <View style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+              <Text style={{ textAlign: 'center', color: '#004c66' }}>Sorry, no results could be found in your selected radius.</Text>
+            </View> }
         </Content>
 
         <PopupDialog

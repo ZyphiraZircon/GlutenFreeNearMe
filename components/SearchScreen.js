@@ -12,7 +12,7 @@ class SearchScreen extends React.Component {
     this.state = {
       useCurrentLocation: true,
       searchTerm: '',
-      radius: '5',
+      radius: '25',
       customLocation: '',
       latitude: '',
       longitude: '',
@@ -82,7 +82,7 @@ class SearchScreen extends React.Component {
       },
       bottomButton: {
         position: 'absolute',
-        bottom: 20
+        top: 550
       },
       bigText: {
         textAlign: 'center',
@@ -122,20 +122,20 @@ class SearchScreen extends React.Component {
                   value={this.state.searchTerm}
                   style={{ color: '#333333', fontFamily: 'Roboto', textAlign: 'center' }}
                   placeholderTextColor={'#777777'}
-                  placeholder="(leave blank if you don't know)"
+                  // placeholder="(leave blank if you don't know)"
                   autoCapitalize={'none'}
                 />
               </Item>
               <Text style={styles.bigText}>within</Text>
               <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                 <Item picker
-                  style={{ width: 100 }}
+                  style={{ width: 150 }}
                   underline={false}
                 >
                   <Picker
                     mode="dropdown"
-                    iosIcon={<Icon name="ios-arrow-down-outline" />}
-                    // style={{ lineHeight: 1 }}
+                    // iosIcon={<Icon name="ios-arrow-down-outline" />}
+                    style={{ width: '100%' }}
                     placeholder="Radius"
                     placeholderStyle={{ }}
                     // placeholderIconColor="#007aff"

@@ -50,7 +50,7 @@ export function searchRestaurants(params, callback) {
     let radiusMeters = Number(radius) / 0.00062137;
 
     let host = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=' + encodedSearchTerm + '&location=' + latitude + ',' + longitude + '&radius=' + radiusMeters + '&key=' + keys.GOOGLE_KEY;
-    // alert(encodedSearchTerm);
+    // alert(latitude);
     const options = {
       headers: {
         Accept: 'application/json',
